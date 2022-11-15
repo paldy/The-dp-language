@@ -1,0 +1,67 @@
+#!/usr/bin/perl
+
+use warnings;
+use strict;
+use File::Slurp;
+
+=cut
+1. Get path/file.dp as argument
+2. Pars that file like a text
+3. Rebuild the text into perl code
+4. Run the new perl code
+
+You can run this script: 
+user@server: perl perldp script.dp
+=cut
+
+my $output_file = 'output.pl'; 
+
+my $file_dp = shift @ARGV;
+my $script_dp = read_file($file_dp);
+
+$script_dp =~ s/ccc:.*:ccc//s; # delete comments
+
+my @lines = split /\n/, $script_dp;
+
+my %var_replaces; # variables storage 
+
+for (@lines){
+    if($_ =~ /^show/) { my $line_for_replace = to_print($_); $script_dp =~ s/$_/$line_for_replace/gu;}
+    elsif($_ =~ /^v_/)   { 
+        my ($line_for_replace, $old_varname, $new_varname) = vars_parser($_);
+        $script_dp =~ s/\Q$_/$line_for_replace/u;
+        $var_replaces{$old_varname} = $new_varname;
+        }
+    }
+
+$script_dp =~ s/\n+/\n/gu; # delete empty lines
+
+while (my($key, $val) = each(%var_replaces))
+    {
+        $script_dp =~ s/\Q$key/$val/gu;
+    }
+
+write_file($output_file, $script_dp);
+exec "perl $output_file";
+
+
+################# subs ########################
+
+sub to_print {
+    my @string_content = split(':', $_[0], 2);
+    $string_content[1] =~ s/^\s+//;
+    return "print \"$string_content[1]\\n\";\n"
+}
+
+sub vars_parser {
+    my($var_name, $var_value) = split(':', $_[0], 2);
+    my $old_varname = $var_name;
+    my $s = '$';
+    if($var_value =~ /\[/) { $s = '@'; $var_value =~ tr/\[\]/\(\)/; }
+    if($var_value =~ /\{/) { $s = '%'; $var_value =~ tr/\{\}/\(\)/; }
+    $var_name =~ s/^v_/$s/;
+    return $var_name." = $var_value;", $old_varname, $var_name
+}
+
+
+

@@ -1,0 +1,35 @@
+
+
+ccc:  This script has written by new programing language.  :ccc
+
+ccc: About comments: :ccc
+ccc: Single-line comment looks like this one :ccc
+ccc:
+Like 
+many
+lines 
+comment
+:ccc
+
+ccc: 
+show: for printing
+:ccc
+
+
+
+show:      Some beautiful text is here: and, some ... else; here as Well.
+
+v_foo: 5678
+v_bar: 23.17
+show: v_foo
+
+v_anystring: 'Some wondering text with any quotes and newlines'
+v_foolist: [23,'sdf cv',"bnm vb"]
+v_anyhashbar: {'22', 34, '45d', 'xcvb'}
+
+v_sumfoobar: v_foo + v_bar
+show: v_sumfoobar
+
+
+show:      Some beautiful text about v_bar and v_foo for instance.
+
